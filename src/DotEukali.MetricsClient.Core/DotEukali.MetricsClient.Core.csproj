@@ -3,10 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <Authors>DotEukali</Authors>
-    <Version>0.2.1</Version>
+    <Version>0.2.2</Version>
     <Description>Simple implementation for New Relic Metrics API</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/DotEukali/MetricsClient</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DotEukali/MetricsClient</RepositoryUrl>
+    <PackageTags>NewRelic Metrics DotNetCore</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

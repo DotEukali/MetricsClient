@@ -9,10 +9,18 @@ namespace DotEukali.MetricsClient.TestApp.Startup
     {
         private IServiceProvider _serviceProvider;
 
-        public IServiceProvider GetServiceProvider() => _serviceProvider 
-            ??= new ServiceCollection()
-                .RegisterMetrics(GetConfiguration())
-                .BuildServiceProvider();
+        public IServiceProvider GetServiceProvider()
+        {
+            if (_serviceProvider == null)
+            {
+                IServiceCollection serviceCollection = new ServiceCollection();
+                serviceCollection.AddMetricsClient(GetConfiguration());
+
+                _serviceProvider = serviceCollection.BuildServiceProvider();
+            }
+
+            return _serviceProvider;
+        }
 
         private IConfiguration GetConfiguration()
         {

@@ -21,9 +21,11 @@ If the attribute `app.name` exists, it will be prefixed to the metric name, eg `
 `ApiUrl` is optional, in case the default url needs to be overriden.
 Attributes are parsed as `IDictionary<string, object>` and sent with every metric.
 
+Polly has been removed as a dependency as of 0.2.3 and a new registration extension created to replace the old which returns IHttpClientBuilder, allowing Polly or other handling logic to be added explicitly.
+
 Microsoft dependency injection is used and can be wired up like:
 ```
-serviceCollection.RegisterMetrics(Configuration);
+serviceCollection.AddMetricsClient(Configuration);
 ```
 
 Then, simply inject `IMetrics` where needed and use.

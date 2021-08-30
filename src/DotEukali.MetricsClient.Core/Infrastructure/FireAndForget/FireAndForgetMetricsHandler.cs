@@ -18,14 +18,12 @@ namespace DotEukali.MetricsClient.Core.Infrastructure.FireAndForget
         {
             Task.Run(async () =>
             {
-                ILogger<FireAndForgetMetricsHandler> logger = null;
+                using IServiceScope scope = _serviceScopeFactory.CreateScope();
+                ILogger<FireAndForgetMetricsHandler> logger = scope.ServiceProvider.GetService<ILogger<FireAndForgetMetricsHandler>>();
 
                 try
                 {
-                    using IServiceScope scope = _serviceScopeFactory.CreateScope();
-                    logger = scope.ServiceProvider.GetService<ILogger<FireAndForgetMetricsHandler>>();
                     IMetricsClient client = scope.ServiceProvider.GetRequiredService<IMetricsClient>();
-                    
                     await metricsClient(client);
                 }
                 catch (Exception ex)

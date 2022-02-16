@@ -1,5 +1,4 @@
-﻿using System;
-using DotEukali.MetricsClient.Core.HttpClients;
+﻿using DotEukali.MetricsClient.Core.HttpClients;
 using DotEukali.MetricsClient.Core.Infrastructure.FireAndForget;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,8 +23,13 @@ namespace DotEukali.MetricsClient.Core.Infrastructure.Startup
             return serviceCollection.AddHttpClient<IMetricsClient, NewRelicClient>();
         }
 
-        
-        [Obsolete("Use AddMetricsClient instead.")]
+
+        /// <summary>
+        /// Adds MetricsClient dependencies to the ServiceCollection and returns IServiceCollection to allow for fluent ServiceCollection statements.  Use AddMetricsClient instead if you want to configure HttpClient handlers.
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
         public static IServiceCollection RegisterMetrics(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
             serviceCollection.Configure<MetricsOptions>(configuration.GetSection(nameof(MetricsOptions)));

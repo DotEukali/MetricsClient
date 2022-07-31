@@ -8,6 +8,7 @@ To use, simply add configuration eg:
   "MetricsOptions": {
     "ApiKey": "{{your New Relic metrics api key}}",
     "ApiUrl": "{{this is optional, the current url is hard-coded}}",
+    "Async": true|false, //(if excluded, this defaults to true, which is the existing default behaviour)
     "Attributes": {
       "host.name": "my.host",
       "app.name": "myapp",
@@ -16,6 +17,7 @@ To use, simply add configuration eg:
   }
 }
 ```
+Added with 6.1.0 is synchronous metrics sending - not usually desired, but I have added it for use where the background process might get prematurely terminated.  This is configured in appsettings and applies to everything, maybe I'll update it later so the send method can be chosen as needed in the code...
 
 If the attribute `app.name` exists, it will be prefixed to the metric name, eg `myapp_mymetricname`.
 `ApiUrl` is optional, in case the default url needs to be overriden.

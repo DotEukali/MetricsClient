@@ -8,15 +8,13 @@ using Microsoft.Extensions.Options;
 
 namespace DotEukali.MetricsClient.Core
 {
-    public class Metrics : IMetrics
+    internal class Metrics : AMetrics, IMetrics
     {
         private readonly IFireAndForgetMetricsHandler _fireAndForgetMetrics;
-        private readonly IDictionary<string, object> _attributes;
 
-        public Metrics(IFireAndForgetMetricsHandler fireAndForgetMetrics, IOptions<MetricsOptions> options)
+        public Metrics(IFireAndForgetMetricsHandler fireAndForgetMetrics, IOptions<MetricsOptions> options) : base(options)
         {
             _fireAndForgetMetrics = fireAndForgetMetrics ?? throw new ArgumentNullException(nameof(fireAndForgetMetrics));
-            _attributes = options?.Value?.Attributes ?? new Dictionary<string, object>();
         }
 
         public IDisposable Timer(string name, params KeyValuePair<string, object>[] attributes) => new TimerMetric(_fireAndForgetMetrics, name, BuildAttributes(attributes));
@@ -26,35 +24,11 @@ namespace DotEukali.MetricsClient.Core
             {
                 await metricsClient.SendMetricsAsync(new MetricsItem(name, MetricsType.Count, value, BuildAttributes(attributes)));
             });
-                
 
         public void Histogram(string name, double value, params KeyValuePair<string, object>[] attributes)
             => _fireAndForgetMetrics.Execute(async metricsClient =>
             {
                 await metricsClient.SendMetricsAsync(new MetricsItem(name, MetricsType.Histogram, value, BuildAttributes(attributes)));
             });
-
-        private IDictionary<string, object> BuildAttributes(KeyValuePair<string, object>[] attributes)
-        {
-            IDictionary<string, object> result = new Dictionary<string, object>();
-
-            if (attributes != null)
-            {
-                foreach (var item in attributes)
-                {
-                    result.Add(item.Key, item.Value);
-                }
-            }
-
-            foreach (var item in _attributes)
-            {
-                if (!result.ContainsKey(item.Key))
-                {
-                    result.Add(item.Key, item.Value);
-                }
-            }
-
-            return result;
-        }
     }
 }

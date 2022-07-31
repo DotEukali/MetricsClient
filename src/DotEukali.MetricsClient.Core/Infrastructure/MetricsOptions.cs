@@ -2,10 +2,11 @@
 
 namespace DotEukali.MetricsClient.Core.Infrastructure
 {
-    public class MetricsOptions
+    internal class MetricsOptions
     {
         public string ApiKey { get; set; }
         public string ApiUrl { get; set; }
+        public bool Async { get; set; } = true;
         public IDictionary<string, object> Attributes { get; set; }
     }
 }

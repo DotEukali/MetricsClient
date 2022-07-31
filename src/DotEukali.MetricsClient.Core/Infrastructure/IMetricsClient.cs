@@ -3,8 +3,9 @@ using DotEukali.MetricsClient.Core.Models;
 
 namespace DotEukali.MetricsClient.Core.Infrastructure
 {
-    public interface IMetricsClient
+    internal interface IMetricsClient
     {
         Task SendMetricsAsync(MetricsItem metricsItem);
+        void SendMetrics(MetricsItem metricsItem);
     }
 }

@@ -5,7 +5,7 @@ using DotEukali.MetricsClient.Core.Extensions;
 
 namespace DotEukali.MetricsClient.Core.Models
 {
-    public class MetricsItem
+    internal class MetricsItem
     {
         public MetricsItem(string name, MetricsType type, double value, IDictionary<string, object> attributes = null)
         {

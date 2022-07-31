@@ -2,7 +2,7 @@
 
 namespace DotEukali.MetricsClient.Core.Models
 {
-    public enum MetricsType
+    internal enum MetricsType
     {   
         [Description("count")]
         Count,

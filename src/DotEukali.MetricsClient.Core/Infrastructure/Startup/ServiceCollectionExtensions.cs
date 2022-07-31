@@ -17,7 +17,7 @@ namespace DotEukali.MetricsClient.Core.Infrastructure.Startup
         {
             serviceCollection.Configure<MetricsOptions>(configuration.GetSection(nameof(MetricsOptions)));
 
-            serviceCollection.AddSingleton<IMetrics, Metrics>();
+            serviceCollection.AddIMetrics(configuration);
             serviceCollection.AddTransient<IFireAndForgetMetricsHandler, FireAndForgetMetricsHandler>();
 
             return serviceCollection.AddHttpClient<IMetricsClient, NewRelicClient>();
@@ -36,8 +36,25 @@ namespace DotEukali.MetricsClient.Core.Infrastructure.Startup
 
             serviceCollection.AddHttpClient<IMetricsClient, NewRelicClient>();
 
-            serviceCollection.AddSingleton<IMetrics, Metrics>();
+            serviceCollection.AddIMetrics(configuration);
             serviceCollection.AddTransient<IFireAndForgetMetricsHandler, FireAndForgetMetricsHandler>();
+
+            return serviceCollection;
+        }
+
+        private static IServiceCollection AddIMetrics(this IServiceCollection serviceCollection, IConfiguration configuration)
+        {
+            MetricsOptions options = new MetricsOptions();
+            configuration.GetSection(nameof(MetricsOptions)).Bind(options);
+
+            if (options.Async)
+            {
+                serviceCollection.AddSingleton<IMetrics, Metrics>();
+            }
+            else
+            {
+                serviceCollection.AddSingleton<IMetrics, SyncMetrics>();
+            }
 
             return serviceCollection;
         }

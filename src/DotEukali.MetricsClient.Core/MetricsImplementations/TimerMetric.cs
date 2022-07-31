@@ -6,7 +6,7 @@ using DotEukali.MetricsClient.Core.Models;
 
 namespace DotEukali.MetricsClient.Core.MetricsImplementations
 {
-    public class TimerMetric : IDisposable
+    internal class TimerMetric : IDisposable
     {
         private readonly IFireAndForgetMetricsHandler _fireAndForgetMetrics;
         private readonly IDictionary<string, object> _attributes;

@@ -3,7 +3,7 @@ using DotEukali.MetricsClient.Core.Models;
 
 namespace DotEukali.MetricsClient.Core.Extensions
 {
-    public static class MetricsItemExtensions
+    internal static class MetricsItemExtensions
     {
         public static IEnumerable<MetricsModel> ToMetricsPayload(this MetricsItem metricsItem) => 
             new[]

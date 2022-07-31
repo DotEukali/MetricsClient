@@ -2,7 +2,7 @@
 
 namespace DotEukali.MetricsClient.Core.Models
 {
-    public class MetricsModel
+    internal class MetricsModel
     {
         public IEnumerable<MetricsItem> Metrics { get; set; }
     }

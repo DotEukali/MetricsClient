@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -57,6 +58,42 @@ namespace DotEukali.MetricsClient.Core.HttpClients
                     if (!response.IsSuccessStatusCode)
                     {
                         _logger?.LogError($"{response.StatusCode}; {response.ReasonPhrase}; {await response.Content.ReadAsStringAsync()}");
+                    }
+                }
+            }
+        }
+
+        public void SendMetrics(MetricsItem metricsItem)
+        {
+            if (_metricsUri == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(metricsItem.Name))
+            {
+                throw new ArgumentNullException(nameof(metricsItem.Name));
+            }
+
+            if (!metricsItem.Attributes.ContainsKey("metric_value"))
+            {
+                metricsItem.Attributes.Add("metric_value", metricsItem.Value);
+            }
+
+            using (HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, _metricsUri))
+            {
+                requestMessage.Headers.Add("Api-Key", _options.ApiKey);
+                requestMessage.Content = JsonContent.Create(metricsItem.ToMetricsPayload());
+
+                using (HttpResponseMessage response = _client.Send(requestMessage))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        using (var reader = new StreamReader(response.Content.ReadAsStream()))
+                        {
+                            string responseText = reader.ReadToEnd();
+                            _logger?.LogError($"{response.StatusCode}; {response.ReasonPhrase}; {responseText}");
+                        }
                     }
                 }
             }

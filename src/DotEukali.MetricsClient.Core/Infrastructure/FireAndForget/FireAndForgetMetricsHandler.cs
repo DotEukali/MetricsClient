@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DotEukali.MetricsClient.Core.Infrastructure.FireAndForget
 {
-    public class FireAndForgetMetricsHandler : IFireAndForgetMetricsHandler
+    internal class FireAndForgetMetricsHandler : IFireAndForgetMetricsHandler
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
 

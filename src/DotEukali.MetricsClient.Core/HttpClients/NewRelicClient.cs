@@ -70,32 +70,39 @@ namespace DotEukali.MetricsClient.Core.HttpClients
                 return;
             }
 
-            if (string.IsNullOrEmpty(metricsItem.Name))
+            try
             {
-                throw new ArgumentNullException(nameof(metricsItem.Name));
-            }
-
-            if (!metricsItem.Attributes.ContainsKey("metric_value"))
-            {
-                metricsItem.Attributes.Add("metric_value", metricsItem.Value);
-            }
-
-            using (HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, _metricsUri))
-            {
-                requestMessage.Headers.Add("Api-Key", _options.ApiKey);
-                requestMessage.Content = JsonContent.Create(metricsItem.ToMetricsPayload());
-
-                using (HttpResponseMessage response = _client.Send(requestMessage))
+                if (string.IsNullOrEmpty(metricsItem.Name))
                 {
-                    if (!response.IsSuccessStatusCode)
+                    throw new ArgumentNullException(nameof(metricsItem.Name));
+                }
+
+                if (!metricsItem.Attributes.ContainsKey("metric_value"))
+                {
+                    metricsItem.Attributes.Add("metric_value", metricsItem.Value);
+                }
+
+                using (HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, _metricsUri))
+                {
+                    requestMessage.Headers.Add("Api-Key", _options.ApiKey);
+                    requestMessage.Content = JsonContent.Create(metricsItem.ToMetricsPayload());
+
+                    using (HttpResponseMessage response = _client.Send(requestMessage))
                     {
-                        using (var reader = new StreamReader(response.Content.ReadAsStream()))
+                        if (!response.IsSuccessStatusCode)
                         {
-                            string responseText = reader.ReadToEnd();
-                            _logger?.LogError($"{response.StatusCode}; {response.ReasonPhrase}; {responseText}");
+                            using (var reader = new StreamReader(response.Content.ReadAsStream()))
+                            {
+                                string responseText = reader.ReadToEnd();
+                                _logger?.LogError($"{response.StatusCode}; {response.ReasonPhrase}; {responseText}");
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, ex.Message);
             }
         }
     }

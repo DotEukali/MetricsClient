@@ -10,9 +10,6 @@ namespace DotEukali.MetricsClient.Core.Infrastructure.Startup
         /// <summary>
         /// Adds dependencies to the ServiceCollection and returns IHttpClientBuilder for metrics HttpClient to allow handlers like Polly to be applied.
         /// </summary>
-        /// <param name="serviceCollection"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
         public static IHttpClientBuilder AddMetricsClient(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
             serviceCollection.Configure<MetricsOptions>(configuration.GetSection(nameof(MetricsOptions)));
@@ -22,14 +19,10 @@ namespace DotEukali.MetricsClient.Core.Infrastructure.Startup
 
             return serviceCollection.AddHttpClient<IMetricsClient, NewRelicClient>();
         }
-
-
+        
         /// <summary>
-        /// Adds MetricsClient dependencies to the ServiceCollection and returns IServiceCollection to allow for fluent ServiceCollection statements.  Use AddMetricsClient instead if you want to configure HttpClient handlers.
+        /// Adds MetricsClient dependencies to the ServiceCollection and returns IServiceCollection to allow for fluent ServiceCollection statements.  Use <see cref="AddMetricsClient" /> instead if you want to configure HttpClient handlers.
         /// </summary>
-        /// <param name="serviceCollection"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
         public static IServiceCollection RegisterMetrics(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
             serviceCollection.Configure<MetricsOptions>(configuration.GetSection(nameof(MetricsOptions)));

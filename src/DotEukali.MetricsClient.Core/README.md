@@ -17,6 +17,8 @@ To use, simply add configuration eg:
   }
 }
 ```
+Change in 7.0.0, have targeted net6 and net7 specifically, instead of netstandard2.1. 
+
 Added with 6.1.0 is synchronous metrics sending - not usually desired, but I have added it for use where the background process might get prematurely terminated.  This is configured in appsettings and applies to everything, maybe I'll update it later so the send method can be chosen as needed in the code...
 
 If the attribute `app.name` exists, it will be prefixed to the metric name, eg `myapp_mymetricname`.

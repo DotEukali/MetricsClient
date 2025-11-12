@@ -17,17 +17,23 @@ To use, simply add configuration eg:
   }
 }
 ```
-Added with 6.1.0 is synchronous metrics sending - not usually desired, but I have added it for use where the background process might get prematurely terminated.  This is configured in appsettings and applies to everything, maybe I'll update it later so the send method can be chosen as needed in the code...
+Change in 9.0.0:
+- Removed support for <= net7.0
+- added an overload for `AddMetricsClient` with an `IConfigurationSection` input.
 
 If the attribute `app.name` exists, it will be prefixed to the metric name, eg `myapp_mymetricname`.
 `ApiUrl` is optional, in case the default url needs to be overriden.
-Attributes are parsed as `IDictionary<string, object>` and sent with every metric.
-
-Polly has been removed as a dependency as of 0.2.3 and a new registration extension created to replace the old which returns IHttpClientBuilder, allowing Polly or other handling logic to be added explicitly.
+Attributes are parsed as `Dictionary<string, object>` and sent with every metric.
 
 Microsoft dependency injection is used and can be wired up like:
 ```
-serviceCollection.AddMetricsClient(Configuration);
+serviceCollection.AddMetricsClient(Configuration); // will use "MetricsOptions" section
 ```
+or
+```
+serviceCollection.AddMetricsClient(Configuration.GetSection("MyMetricsOptionsPath"));
+```
+
+`AddMetricsClient` returns `IHttpClientBuilder`, allowing Polly or other handlers to be applied.
 
 Then, simply inject `IMetrics` where needed and use.

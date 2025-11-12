@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace DotEukali.MetricsClient.Core.Models
+namespace DotEukali.MetricsClient.Core.Models;
+
+internal class MetricsModel
 {
-    internal class MetricsModel
-    {
-        public IEnumerable<MetricsItem> Metrics { get; set; }
-    }
+    public IEnumerable<MetricsItem> Metrics { get; set; }
 }

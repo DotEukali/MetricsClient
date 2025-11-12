@@ -1,55 +1,55 @@
-﻿using DotEukali.MetricsClient.Core.HttpClients;
+﻿using System;
+using DotEukali.MetricsClient.Core.HttpClients;
 using DotEukali.MetricsClient.Core.Infrastructure.FireAndForget;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DotEukali.MetricsClient.Core.Infrastructure.Startup
+namespace DotEukali.MetricsClient.Core.Infrastructure.Startup;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    private const string DefaultApiUrl = "https://metric-api.newrelic.com/metric/v1";
+
+    /// <summary>
+    /// Adds dependencies to the ServiceCollection and returns IHttpClientBuilder for metrics HttpClient to allow handlers like Polly to be applied.
+    /// </summary>
+    public static IHttpClientBuilder AddMetricsClient(this IServiceCollection serviceCollection, IConfiguration configuration) =>
+        AddMetricsClient(serviceCollection, configuration.GetSection(nameof(MetricsOptions)));
+
+    /// <summary>
+    /// Adds dependencies to the ServiceCollection and returns IHttpClientBuilder for metrics HttpClient to allow handlers like Polly to be applied.
+    /// </summary>
+    public static IHttpClientBuilder AddMetricsClient(this IServiceCollection serviceCollection, IConfigurationSection metricsConfigSection)
     {
-        /// <summary>
-        /// Adds dependencies to the ServiceCollection and returns IHttpClientBuilder for metrics HttpClient to allow handlers like Polly to be applied.
-        /// </summary>
-        public static IHttpClientBuilder AddMetricsClient(this IServiceCollection serviceCollection, IConfiguration configuration)
+        serviceCollection.Configure<MetricsOptions>(metricsConfigSection);
+
+        MetricsOptions metricsOptions = metricsConfigSection.Get<MetricsOptions>();
+
+        serviceCollection.AddIMetrics(metricsOptions);
+
+        return serviceCollection.AddHttpClient<IMetricsClient, NewRelicClient>(options =>
         {
-            serviceCollection.Configure<MetricsOptions>(configuration.GetSection(nameof(MetricsOptions)));
+            options.BaseAddress =
+                Uri.TryCreate(metricsOptions.ApiUrl, UriKind.Absolute, out Uri metricsUri)
+                    ? metricsUri
+                    : new Uri(DefaultApiUrl);
 
-            serviceCollection.AddIMetrics(configuration);
-            serviceCollection.AddTransient<IFireAndForgetMetricsHandler, FireAndForgetMetricsHandler>();
+            options.DefaultRequestHeaders.Add("Api-Key", metricsOptions.ApiKey);
+        });
+    }
 
-            return serviceCollection.AddHttpClient<IMetricsClient, NewRelicClient>();
-        }
-        
-        /// <summary>
-        /// Adds MetricsClient dependencies to the ServiceCollection and returns IServiceCollection to allow for fluent ServiceCollection statements.  Use <see cref="AddMetricsClient" /> instead if you want to configure HttpClient handlers.
-        /// </summary>
-        public static IServiceCollection RegisterMetrics(this IServiceCollection serviceCollection, IConfiguration configuration)
+    private static IServiceCollection AddIMetrics(this IServiceCollection serviceCollection, MetricsOptions options)
+    {
+        if (options.Async)
         {
-            serviceCollection.Configure<MetricsOptions>(configuration.GetSection(nameof(MetricsOptions)));
-
-            serviceCollection.AddHttpClient<IMetricsClient, NewRelicClient>();
-
-            serviceCollection.AddIMetrics(configuration);
-            serviceCollection.AddTransient<IFireAndForgetMetricsHandler, FireAndForgetMetricsHandler>();
-
-            return serviceCollection;
+            serviceCollection.AddSingleton<IFireAndForgetMetricsHandler, FireAndForgetMetricsHandler>();
+            serviceCollection.AddSingleton<IMetrics, Metrics>();
         }
-
-        private static IServiceCollection AddIMetrics(this IServiceCollection serviceCollection, IConfiguration configuration)
+        else
         {
-            MetricsOptions options = new MetricsOptions();
-            configuration.GetSection(nameof(MetricsOptions)).Bind(options);
-
-            if (options.Async)
-            {
-                serviceCollection.AddSingleton<IMetrics, Metrics>();
-            }
-            else
-            {
-                serviceCollection.AddSingleton<IMetrics, SyncMetrics>();
-            }
-
-            return serviceCollection;
+            serviceCollection.AddSingleton<IMetrics, SyncMetrics>();
         }
+
+        return serviceCollection;
     }
 }

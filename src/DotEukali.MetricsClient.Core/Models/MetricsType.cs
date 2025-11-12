@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel;
 
-namespace DotEukali.MetricsClient.Core.Models
+namespace DotEukali.MetricsClient.Core.Models;
+
+internal enum MetricsType
 {
-    internal enum MetricsType
-    {   
-        [Description("count")]
-        Count,
-        [Description("gauge")]
-        Histogram
-    }
+    [Description("count")]
+    Count,
+    [Description("gauge")]
+    Histogram
 }

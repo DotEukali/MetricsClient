@@ -3,31 +3,30 @@ using DotEukali.MetricsClient.Core.Infrastructure.Startup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DotEukali.MetricsClient.TestApp.Startup
+namespace DotEukali.MetricsClient.TestApp.Startup;
+
+public static class DependencyBuilder
 {
-    public class DependencyBuilder
+    private static IServiceProvider _serviceProvider;
+
+    public static IServiceProvider GetServiceProvider()
     {
-        private IServiceProvider _serviceProvider;
-
-        public IServiceProvider GetServiceProvider()
-        {
-            if (_serviceProvider == null)
-            {
-                IServiceCollection serviceCollection = new ServiceCollection();
-                serviceCollection.AddMetricsClient(GetConfiguration());
-
-                _serviceProvider = serviceCollection.BuildServiceProvider();
-            }
-
+        if (_serviceProvider != null)
             return _serviceProvider;
-        }
 
-        private IConfiguration GetConfiguration()
-        {
-            ConfigurationBuilder config = new ConfigurationBuilder();
-            config.AddJsonFile("C:\\dev\\DotEukali.MetricsClient.TestApp\\appconfig.json", false);
+        IServiceCollection serviceCollection = new ServiceCollection();
+        serviceCollection.AddMetricsClient(GetConfiguration().GetSection("MetricsOptions"));
 
-            return config.Build();
-        }
+        _serviceProvider = serviceCollection.BuildServiceProvider();
+
+        return _serviceProvider;
+    }
+
+    private static IConfiguration GetConfiguration()
+    {
+        ConfigurationBuilder config = new ConfigurationBuilder();
+        config.AddUserSecrets<MetricsClientApp>();
+
+        return config.Build();
     }
 }

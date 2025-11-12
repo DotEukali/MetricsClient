@@ -1,20 +1,18 @@
 ﻿using System.Collections.Generic;
 using DotEukali.MetricsClient.Core.Models;
 
-namespace DotEukali.MetricsClient.Core.Extensions
+namespace DotEukali.MetricsClient.Core.Extensions;
+
+internal static class MetricsItemExtensions
 {
-    internal static class MetricsItemExtensions
-    {
-        public static IEnumerable<MetricsModel> ToMetricsPayload(this MetricsItem metricsItem) => 
-            new[]
-            {
-                new MetricsModel()
-                {
-                    Metrics = new[]
-                    {
-                        metricsItem
-                    }
-                }
-            };
-    }
+    public static IEnumerable<MetricsModel> ToMetricsPayload(this MetricsItem metricsItem) =>
+    [
+        new()
+        {
+            Metrics =
+            [
+                metricsItem
+            ]
+        }
+    ];
 }

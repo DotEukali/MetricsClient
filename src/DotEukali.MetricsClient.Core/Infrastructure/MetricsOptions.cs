@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace DotEukali.MetricsClient.Core.Infrastructure
+namespace DotEukali.MetricsClient.Core.Infrastructure;
+
+public sealed class MetricsOptions
 {
-    internal class MetricsOptions
-    {
-        public string ApiKey { get; set; }
-        public string ApiUrl { get; set; }
-        public bool Async { get; set; } = true;
-        public IDictionary<string, object> Attributes { get; set; }
-    }
+    public string ApiKey { get; init; }
+    public string ApiUrl { get; init; }
+    public bool Async { get; init; } = true;
+    public Dictionary<string, object> Attributes { get; init; } = [];
 }
